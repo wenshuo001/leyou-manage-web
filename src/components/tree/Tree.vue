@@ -3,13 +3,14 @@
     <TreeItem
       class="item" :model="model" v-for="(model, index) in db" :key="index"
       :url="url"
-      :isEdit="isEdit"
+      :isEdit="true"
       :nodes="nodes"
       @handleAdd="handleAdd"
       @handleEdit="handleEdit"
       @handleDelete="handleDelete"
       @handleClick="handleClick"
     />
+
   </v-list>
 </template>
 
