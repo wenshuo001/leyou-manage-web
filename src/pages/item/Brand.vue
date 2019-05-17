@@ -3,15 +3,10 @@
     <v-card-title>
       <v-btn @click="addBrand" color="primary">新增品牌</v-btn>
       <v-spacer/>
-      <v-text-field
-        append-icon="search"
-        label="搜索"
-        single-line
-        hide-details
-        v-model="search"
-      />
+      <v-text-field label="输入关键字搜索" v-model="search" append-icon="search"/>
     </v-card-title>
     <v-divider/>
+
     <v-data-table
       :headers="headers"
       :items="items"
@@ -98,10 +93,11 @@
     },
     watch: {
       pagination: {
+        deep: true,
         handler() {
           this.getDataFromApi();
-        },
-        deep: true
+        }
+
       },
       search: {
         handler() {
@@ -150,13 +146,21 @@
 
       },
       getDataFromApi() {
-        this.loading = true;
-        // 200ms后返回假数据
-        window.setTimeout(() => {
-          this.items = brandData.slice(0,4);
-          this.totalItems = 100
-          this.loading = false;
-        }, 200)
+        this.loading = true; // 加载数据
+        // 通过axios获取数据
+        this.$http.get("/item/brand/page", {
+          params: {
+            page: this.pagination.page, // 当前页
+            rows: this.pagination.rowsPerPage, // 每页条数
+            sortBy: this.pagination.sortBy, // 排序字段
+            desc: this.pagination.descending, // 是否降序
+            key: this.search // 查询字段
+          }
+        }).then(resp => { // 获取响应结果对象
+          this.totalItems = resp.data.total; // 总条数
+          this.items = resp.data.items; // 品牌数据
+          this.loading = false; // 加载完成
+        });
       }
     }
   }

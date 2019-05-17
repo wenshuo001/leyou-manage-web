@@ -23,7 +23,7 @@
       </v-flex>
       <v-flex>
         <v-upload
-          v-model="brand.image" url="/item/upload" :multiple="false" :pic-width="250" :pic-height="90"
+          v-model="brand.image" url="/upload/image" :multiple="false" :pic-width="250" :pic-height="90"
         />
       </v-flex>
     </v-layout>
@@ -74,14 +74,18 @@
       submit() {
         // 表单校验
         if (this.$refs.brandForm.validate()) {
-          this.brand.categories = this.brand.categories.map(c => c.id);
-          this.brand.letter = this.brand.letter.toUpperCase();
-          // 将数据提交到后台
-          this.$http({
-            method: this.isEdit ? 'put' : 'post',
-            url: '/item/brand',
-            data: this.$qs.stringify(this.brand)
-          }).then(() => {
+
+          //定义一个参数对象，通过解构表达式来获取brand中的属性
+          const {categories,letter,...params} = this.brand;
+          console.log(this.brand,2)
+          console.log(this.brand.categories,111)
+          //数据库只要保存分类的id即可
+          params.cids = categories.map(c => c.id).join(",")
+          params.letter = letter.toUpperCase();
+
+          console.log(this.$qs.stringify(params));
+            this.$http.post('/item/brand',this.$qs.stringify(params))
+           .then(() => {
             // 关闭窗口
             this.$message.success("保存成功！");
             this.closeWindow();

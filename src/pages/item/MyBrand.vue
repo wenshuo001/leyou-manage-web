@@ -1,12 +1,30 @@
 <template>
   <div>
     <v-card-title>
-      <v-btn color="primary">新增品牌</v-btn>
+      <v-btn color="primary"  @click="addBrand">新增品牌</v-btn>
       <!--空间隔离组件-->
       <v-spacer />
       <!--搜索框，与search属性关联-->
       <v-text-field label="输入关键字搜索" v-model="search" append-icon="search"/>
     </v-card-title>
+
+    <!--弹出的对话框-->
+    <v-dialog max-width="500" v-model="show" persistent>
+      <v-card>
+        <!--对话框的标题-->
+        <v-toolbar dense dark color="primary">
+          <v-toolbar-title>新增品牌</v-toolbar-title>
+          <v-spacer/>
+          <!--关闭窗口的按钮-->
+          <v-btn icon @click="closeWindow"><v-icon>close</v-icon></v-btn>
+        </v-toolbar>
+        <!--对话框的内容，表单-->
+        <v-card-text class="px-5">
+          我是表单
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
     <v-data-table
       :headers="headers"
       :items="brands"
@@ -35,9 +53,11 @@
 </template>
 
 <script>
-
+  import MyBrandForm from './MyBrandForm'
   export default {
-
+    components:{
+      MyBrandForm
+    },
     name: "myBrand",
     data () {
       return {
@@ -52,7 +72,8 @@
           {text: 'LOGO', align: 'center', value: 'image', sortable: false},
           {text: '首字母', align: 'center', value: 'letter'},
           {text: '操作', align: 'center', value: 'id', sortable: false }
-        ]
+        ],
+        show: false,
       }
     },
     watch: {
@@ -85,6 +106,14 @@
           this.brands = resp.data.items; // 品牌数据
           this.loading = false; // 加载完成
         });
+      },
+      addBrand(){
+        // 控制弹窗可见：
+        this.show = true;
+      },
+      closeWindow(){
+        // 关闭窗口
+        this.show = false;
       }
     },
     // 渲染后执行
